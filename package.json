@@ -16,5 +16,8 @@
   "bugs": {
     "url": "https://github.com/tangivan/tinyapp/issues"
   },
-  "homepage": "https://github.com/tangivan/tinyapp#readme"
+  "homepage": "https://github.com/tangivan/tinyapp#readme",
+  "dependencies": {
+    "express": "^4.17.1"
+  }
 }
