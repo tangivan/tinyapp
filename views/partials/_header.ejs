@@ -21,7 +21,7 @@
           <% if(username) { %>
             <form class="form-inline my-2 my-lg-0 ml-auto" method="POST" action="/logout">
               <h3>
-                <%= username %>
+                <%= username.email %>
               </h3>
               <button type="submit">Log Out</button>
             </form>

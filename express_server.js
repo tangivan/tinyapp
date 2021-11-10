@@ -21,24 +21,41 @@ const urlDatabase = {
   "9sm5xK": "http://www.google.com"
 };
 
+const users = {
+  "userRandomID": {
+    id: "userRandomID",
+    email: "user@example.com",
+    password: "purple-monkey-dinosaur"
+  },
+  "user2RandomID": {
+    id: "user2RandomID",
+    email: "user2@example.com",
+    password: "dishwasher-funk"
+  }
+};
+
 app.get("/", (req, res) => {
   res.redirect('/urls');
 });
 
 app.get("/urls", (req, res) => {
-  const templateVars = { urls: urlDatabase, username: req.cookies["username"] };
+  const user = users[req.cookies["user_id"]];
+  console.log(user);
+  const templateVars = { urls: urlDatabase, username: user };
   res.render("urls_index", templateVars);
 });
 
 app.post("/urls", (req, res) => {
   const shortenedURL = generateRandomString();
   urlDatabase[shortenedURL] = req.body.longURL;
-  const templateVars = { shortURL: shortenedURL, longURL: req.body.longURL, username: req.cookies["username"] };
+  const user = users[req.cookies["user_id"]];
+  const templateVars = { shortURL: shortenedURL, longURL: req.body.longURL, username: user };
   res.render("urls_show", templateVars);
 });
 
 app.get("/urls/new", (req, res) => {
-  const templateVars = { username: req.cookies["username"] };
+  const user = users[req.cookies["user_id"]];
+  const templateVars = { username: user };
   res.render("urls_new", templateVars);
 });
 
@@ -50,7 +67,8 @@ app.post("/urls/:shortURL/delete", (req, res) => {
 
 app.get("/urls/:shortURL", (req, res) => {
   const { shortURL } = req.params;
-  const templateVars = { shortURL, longURL: urlDatabase[shortURL], username: req.cookies["username"] };
+  const user = users[req.cookies["user_id"]];
+  const templateVars = { shortURL, longURL: urlDatabase[shortURL], username: user };
   res.render("urls_show", templateVars);
 });
 
@@ -80,6 +98,31 @@ app.post("/logout", (req, res) => {
 app.get("/register", (req, res) => {
   res.render("register");
 });
+
+app.post("/register", (req, res) => {
+  const { email, password } = req.body;
+  const id = generateRandomString();
+  const newUser = {
+    id,
+    email,
+    password
+  };
+  if (!users[id]) {
+    users[id] = newUser;
+  } else {
+    res.send("User already exists");
+  }
+  console.log(users);
+  res.cookie("user_id", id);
+  res.redirect('/urls');
+});
+
 app.listen(PORT, () => {
   console.log(`Example app listening on port ${PORT}!`);
 });
+
+// "userRandomID": {
+//   id: "userRandomID",
+//   email: "user@example.com",
+//   password: "purple-monkey-dinosaur"
+// },
