@@ -34,6 +34,13 @@ const users = {
   }
 };
 
+const emailLookup = (email) => {
+  for (const key in users) {
+    if (users[key].email === email) return true;
+  }
+  return false;
+};
+
 app.get("/", (req, res) => {
   res.redirect('/urls');
 });
@@ -101,17 +108,23 @@ app.get("/register", (req, res) => {
 
 app.post("/register", (req, res) => {
   const { email, password } = req.body;
+
+  if (email === '' || password === '') {
+    return res.status(400).send("Error: 400 Status Code<br/>Email or Password is empty");
+  }
+  if (emailLookup(email)) {
+    return res.status(400).send("Error: 400 Status Code<br/>User already exists");
+  }
+
   const id = generateRandomString();
   const newUser = {
     id,
     email,
     password
   };
-  if (!users[id]) {
-    users[id] = newUser;
-  } else {
-    res.send("User already exists");
-  }
+
+  users[id] = newUser;
+
   console.log(users);
   res.cookie("user_id", id);
   res.redirect('/urls');
