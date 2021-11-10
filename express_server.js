@@ -34,11 +34,24 @@ const users = {
   }
 };
 
-const emailLookup = (email) => {
+const emailLookup = (email, password = null) => {
   for (const key in users) {
-    if (users[key].email === email) return true;
+    if (users[key].email === email) {
+      if (!password) return true;
+      if (password) {
+        return users[key].password === password;
+      }
+    }
   }
   return false;
+};
+
+const getId = (email) => {
+  for (const key in users) {
+    if (users[key].email === email) {
+      return users[key].id;
+    }
+  }
 };
 
 app.get("/", (req, res) => {
@@ -96,13 +109,22 @@ app.get("/login", (req, res) => {
 });
 
 app.post("/login", (req, res) => {
-  const { username } = req.body;
-  res.cookie("username", username);
+  const { email, password } = req.body;
+  if (email === '' || password === '') {
+    return res.status(400).send("Error: 400 Status Code<br/>Email or Password is empty.");
+  }
+  if (!emailLookup(email)) {
+    return res.status(403).send("Error: 403 Status Code<br/>Email cannot be found.");
+  }
+  if (!emailLookup(email, password)) {
+    return res.status(403).send("Error: 403 Status Code<br/>Password incorrect.");
+  }
+  res.cookie("user_id", getId(email));
   res.redirect('/urls');
 });
 
 app.post("/logout", (req, res) => {
-  res.clearCookie("username");
+  res.clearCookie("user_id");
   res.redirect('/urls');
 });
 
