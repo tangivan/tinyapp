@@ -1,6 +1,7 @@
 const express = require("express");
 const morgan = require("morgan");
 const cookieParser = require("cookie-parser");
+const { generateRandomString } = require("./helpers/generateRandomString");
 
 const app = express();
 const PORT = 2002; // default port 8080
@@ -11,10 +12,6 @@ const bodyParser = require("body-parser");
 app.use(bodyParser.urlencoded({ extended: true }));
 app.use(morgan('dev'));
 app.use(cookieParser());
-
-const generateRandomString = () => {
-  return Math.floor((1 + Math.random()) * 100000000).toString(36);
-};
 
 const urlDatabase = {
   "b2xVn2": "http://www.lighthouselabs.ca",
