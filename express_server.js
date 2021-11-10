@@ -91,6 +91,10 @@ app.get("/u/:shortURL", (req, res) => {
   res.redirect(longURL);
 });
 
+app.get("/login", (req, res) => {
+  res.render("login");
+});
+
 app.post("/login", (req, res) => {
   const { username } = req.body;
   res.cookie("username", username);
@@ -133,9 +137,3 @@ app.post("/register", (req, res) => {
 app.listen(PORT, () => {
   console.log(`Example app listening on port ${PORT}!`);
 });
-
-// "userRandomID": {
-//   id: "userRandomID",
-//   email: "user@example.com",
-//   password: "purple-monkey-dinosaur"
-// },

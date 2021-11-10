@@ -13,10 +13,10 @@
     </div>
     <div>
       <% if(!username) { %>
-        <form class="form-inline my-2 my-lg-0 ml-auto" method="POST" action="/login">
-          <input name="username" />
-          <button type="submit">Log In</button>
-        </form>
+        <div class="d-flex flex-row">
+          <a class="nav-item nav-link" href="/login">Log In</a>
+          <a class="nav-item nav-link" href="/Register">Register</a>
+        </div>
         <% } %>
           <% if(username) { %>
             <form class="form-inline my-2 my-lg-0 ml-auto" method="POST" action="/logout">
