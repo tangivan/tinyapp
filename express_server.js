@@ -24,21 +24,26 @@ app.get("/", (req, res) => {
 
 app.get("/urls", (req, res) => {
   const user = userDatabase[req.cookies["user_id"]];
-  console.log(user);
   const templateVars = { urls: urlDatabase, username: user };
   res.render("urls_index", templateVars);
 });
 
 app.post("/urls", (req, res) => {
-  const shortenedURL = generateRandomString();
-  urlDatabase[shortenedURL] = req.body.longURL;
   const user = userDatabase[req.cookies["user_id"]];
+  if (!user) {
+    res.status(401).send("Status Code: 401 Unauthorized Request. Request has not been applied due to lack of authentication credentails.");
+  }
+  const shortenedURL = generateRandomString();
+  urlDatabase[shortenedURL] = { longURL: req.body.longURL, userID: user.id };
   const templateVars = { shortURL: shortenedURL, longURL: req.body.longURL, username: user };
   res.render("urls_show", templateVars);
 });
 
 app.get("/urls/new", (req, res) => {
   const user = userDatabase[req.cookies["user_id"]];
+  if (!user) {
+    return res.redirect("/login");
+  }
   const templateVars = { username: user };
   res.render("urls_new", templateVars);
 });
@@ -52,24 +57,31 @@ app.post("/urls/:shortURL/delete", (req, res) => {
 app.get("/urls/:shortURL", (req, res) => {
   const { shortURL } = req.params;
   const user = userDatabase[req.cookies["user_id"]];
-  const templateVars = { shortURL, longURL: urlDatabase[shortURL], username: user };
+  const templateVars = { shortURL, longURL: urlDatabase[shortURL].longURL, username: user };
   res.render("urls_show", templateVars);
 });
 
 app.post("/urls/:shortURL", (req, res) => {
   const { shortURL } = req.params;
   const { newURL } = req.body;
-  urlDatabase[shortURL] = newURL;
+  urlDatabase[shortURL].longURL = newURL;
   res.redirect("/urls");
 });
 
 app.get("/u/:shortURL", (req, res) => {
-  const longURL = urlDatabase[req.params.shortURL];
+  const { shortURL } = req.params;
+  if (!urlDatabase[shortURL]) {
+    return res.status(404).send("Status Code: 404 Resource Not Found.");
+  }
+  const longURL = urlDatabase[req.params.shortURL].longURL;
   res.redirect(longURL);
 });
 
 app.get("/login", (req, res) => {
   const user = userDatabase[req.cookies["user_id"]];
+  if (user) {
+    return res.redirect('/urls');
+  }
   const templateVars = { username: user };
   res.render("login", templateVars);
 });
@@ -93,6 +105,9 @@ app.post("/logout", (req, res) => {
 
 app.get("/register", (req, res) => {
   const user = userDatabase[req.cookies["user_id"]];
+  if (user) {
+    return res.redirect("/urls");
+  }
   const templateVars = { username: user };
   res.render("register", templateVars);
 });
