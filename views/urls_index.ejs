@@ -25,42 +25,38 @@
           </tr>
         </thead>
         <tbody>
-          <% if(username) { %>
-            <% for(let url in urls) { %>
-              <% if(username.id===urls[url].userID) { %>
-                <tr>
-                  <td>
-                    <%= url %>
-                  </td>
-                  <td>
-                    <%= urls[url].longURL %>
-                  </td>
-                  <td>
-                    <form method="GET" action="/urls/<%= url %>/">
-                      <button type="submit" style="color: blue; 
+          <% for(let url in urls) { %>
+            <tr>
+              <td>
+                <%= url %>
+              </td>
+              <td>
+                <%= urls[url].longURL %>
+              </td>
+              <td>
+                <form method="GET" action="/urls/<%= url %>/">
+                  <button type="submit" style="color: blue; 
                         background-color: transparent;
                         font-size: 25px;
                         border-radius: 4px;
                         border-color: blue;
                         box-shadow: none;">
-                        Edit</button>
-                    </form>
-                  </td>
-                  <td>
-                    <form method="POST" action="/urls/<%= url %>/delete">
-                      <button type="submit" style="color: red; 
+                    Edit</button>
+                </form>
+              </td>
+              <td>
+                <form method="POST" action="/urls/<%= url %>/delete">
+                  <button type="submit" style="color: red; 
                         background-color: transparent;
                         font-size: 25px;
                         border-radius: 4px;
                         border-color: red;
                         box-shadow: none;">
-                        Delete</button>
-                    </form>
-                  </td>
-                </tr>
-                <% } %>
-                  <% } %>
-                    <% } %>
+                    Delete</button>
+                </form>
+              </td>
+            </tr>
+            <% } %>
         </tbody>
       </table>
     </main>
