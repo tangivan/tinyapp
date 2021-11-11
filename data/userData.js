@@ -1,6 +1,6 @@
 const userDatabase = {
-  "userRandomID": {
-    id: "userRandomID",
+  "aJ48lW": {
+    id: "aJ48lW",
     email: "user@example.com",
     password: "purple-monkey-dinosaur"
   },
@@ -8,6 +8,11 @@ const userDatabase = {
     id: "user2RandomID",
     email: "user2@example.com",
     password: "dishwasher-funk"
+  },
+  "2jv0ee": {
+    id: "2jv0ee",
+    email: "ivan@ivan.com",
+    password: "abcdefg"
   }
 };
 
