@@ -1,6 +1,6 @@
 const express = require("express");
 const morgan = require("morgan");
-const cookieParser = require("cookie-parser");
+const cookieSession = require('cookie-session');
 const generateRandomString = require("./helpers/generateRandomString");
 const userHelperGenerator = require("./helpers/userHelpers");
 const bcrypt = require("bcryptjs");
@@ -17,14 +17,17 @@ app.set("view engine", "ejs");
 const bodyParser = require("body-parser");
 app.use(bodyParser.urlencoded({ extended: true }));
 app.use(morgan('dev'));
-app.use(cookieParser());
+app.use(cookieSession({
+  name: 'session',
+  keys: ['key1', 'key2']
+}));
 
 app.get("/", (req, res) => {
   res.redirect('/urls');
 });
 
 app.get("/urls", (req, res) => {
-  const user = userDatabase[req.cookies["user_id"]];
+  const user = userDatabase[req.session.userId];
   if (!user) {
     res.status(403);
     return res.render("unauthenticated", { username: user, error: `Please log in to view your shortened URLs` });
@@ -35,7 +38,7 @@ app.get("/urls", (req, res) => {
 });
 
 app.post("/urls", (req, res) => {
-  const user = userDatabase[req.cookies["user_id"]];
+  const user = userDatabase[req.session.userId];
   if (!user) {
     return res.status(401).send("Status Code: 401 Unauthorized Request. Request has not been applied due to lack of authentication credentails.");
   }
@@ -49,7 +52,7 @@ app.post("/urls", (req, res) => {
 });
 
 app.get("/urls/new", (req, res) => {
-  const user = userDatabase[req.cookies["user_id"]];
+  const user = userDatabase[req.session.userId];
   if (!user) {
     return res.redirect("/login");
   }
@@ -59,7 +62,7 @@ app.get("/urls/new", (req, res) => {
 
 app.post("/urls/:shortURL/delete", (req, res) => {
   const { shortURL } = req.params;
-  const user = userDatabase[req.cookies["user_id"]];
+  const user = userDatabase[req.session.userId];
 
   if (!urlDatabase[shortURL]) {
     return res.status(404).send("Status Code: 404 Resource Not Found.");
@@ -74,7 +77,7 @@ app.post("/urls/:shortURL/delete", (req, res) => {
 
 app.get("/urls/:shortURL", (req, res) => {
   const { shortURL } = req.params;
-  const user = userDatabase[req.cookies["user_id"]];
+  const user = userDatabase[req.session.userId];
 
   if (!urlDatabase[shortURL]) {
     return res.status(404).send("Status Code: 404 Resource Not Found.");
@@ -93,7 +96,7 @@ app.get("/urls/:shortURL", (req, res) => {
 
 app.post("/urls/:shortURL", (req, res) => {
   const { shortURL } = req.params;
-  const user = userDatabase[req.cookies["user_id"]];
+  const user = userDatabase[req.session.userId];
 
   if (!urlDatabase[shortURL]) {
     return res.status(404).send("Status Code: 404 Resource Not Found.");
@@ -121,7 +124,7 @@ app.get("/u/:shortURL", (req, res) => {
 });
 
 app.get("/login", (req, res) => {
-  const user = userDatabase[req.cookies["user_id"]];
+  const user = userDatabase[req.session.userId];
   if (user) {
     return res.redirect('/urls');
   }
@@ -141,18 +144,19 @@ app.post("/login", (req, res) => {
     if (!success) {
       return res.status(400).send("Bad Request. Passwords do not match.");
     }
-    res.cookie("user_id", data.id);
+    req.session.userId = data.id;
     res.redirect('/urls');
   });
 });
 
 app.post("/logout", (req, res) => {
   res.clearCookie("user_id");
+  req.session = null;
   res.redirect('/urls');
 });
 
 app.get("/register", (req, res) => {
-  const user = userDatabase[req.cookies["user_id"]];
+  const user = userDatabase[req.session.userId];
   if (user) {
     return res.redirect("/urls");
   }
@@ -172,14 +176,14 @@ app.post("/register", (req, res) => {
     bcrypt.hash(data.password, salt, (err, hash) => {
       data.password = hash;
       userDatabase[data.id] = data;
-      res.cookie("user_id", data.id);
+      req.session.userId = data.id;
       res.redirect('/urls');
     });
   });
 });
 
 app.get("*", (req, res) => {
-  const user = userDatabase[req.cookies["user_id"]];
+  const user = userDatabase[req.session.userId];
   if (user) {
     return res.redirect("/urls");
   } else {

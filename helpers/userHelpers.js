@@ -1,12 +1,9 @@
 const generateRandomString = require('./generateRandomString');
 const bcrypt = require('bcryptjs');
+
 const userHelperGenerator = (userDB, urlDB) => {
 
-  const errorHandler = (user, shortURL = null) => {
-
-  };
-
-  const getUser = (email) => {
+  const getUserByEmail = (email) => {
     let user;
     for (const key in userDB) {
       if (userDB[key].email === email) {
@@ -19,7 +16,7 @@ const userHelperGenerator = (userDB, urlDB) => {
   };
 
   const createUser = (email, password) => {
-    const user = getUser(email);
+    const user = getUserByEmail(email);
     if (email === '' || password === '') {
       return {
         error: "Error: 400 Status Code<br/>Email or Password is empty.",
@@ -49,7 +46,7 @@ const userHelperGenerator = (userDB, urlDB) => {
   };
 
   const authUser = (email, password) => {
-    const user = getUser(email);
+    const user = getUserByEmail(email);
     if (email === '' || password === '') {
       return {
         error: "Error: 400 Status Code<br/>Email or Password is empty.",
@@ -83,7 +80,7 @@ const userHelperGenerator = (userDB, urlDB) => {
   };
 
   return {
-    getUser,
+    getUserByEmail,
     authUser,
     createUser,
     urlsForUser,
