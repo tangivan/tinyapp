@@ -38,6 +38,9 @@ app.post("/urls", (req, res) => {
   if (!user) {
     return res.status(401).send("Status Code: 401 Unauthorized Request. Request has not been applied due to lack of authentication credentails.");
   }
+  if (req.body.longURL === '') {
+    return res.status(400).send("Status Code: 400 Bad Request. Cannot shorten empty link.");
+  }
   const shortenedURL = generateRandomString();
   urlDatabase[shortenedURL] = { longURL: req.body.longURL, userID: user.id };
   const templateVars = { shortURL: shortenedURL, longURL: req.body.longURL, username: user };
@@ -152,7 +155,6 @@ app.get("/register", (req, res) => {
 });
 
 app.post("/register", (req, res) => {
-  console.log(userDatabase);
   const { email, password } = req.body;
   const { data, error, statusCode } = createUser(email, password);
 
@@ -162,6 +164,15 @@ app.post("/register", (req, res) => {
   userDatabase[data.id] = data;
   res.cookie("user_id", data.id);
   res.redirect('/urls');
+});
+
+app.get("*", (req, res) => {
+  const user = userDatabase[req.cookies["user_id"]];
+  if (user) {
+    return res.redirect("/urls");
+  } else {
+    return res.redirect("/login");
+  }
 });
 
 app.listen(PORT, () => {
