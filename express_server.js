@@ -6,7 +6,7 @@ const userHelperGenerator = require("./helpers/userHelpers");
 
 const userDatabase = require("./data/userData");
 const urlDatabase = require("./data/urlData");
-const { authUser, createUser } = userHelperGenerator(userDatabase);
+const { authUser, createUser, urlsForUser } = userHelperGenerator(userDatabase, urlDatabase);
 
 const app = express();
 const PORT = 2002; // default port 8080
@@ -24,14 +24,19 @@ app.get("/", (req, res) => {
 
 app.get("/urls", (req, res) => {
   const user = userDatabase[req.cookies["user_id"]];
-  const templateVars = { urls: urlDatabase, username: user };
+  if (!user) {
+    res.status(403);
+    return res.render("unauthenticated", { username: user, error: `Please log in to view your shortened URLs` });
+  }
+  const userUrls = urlsForUser(user.id);
+  const templateVars = { urls: userUrls, username: user };
   res.render("urls_index", templateVars);
 });
 
 app.post("/urls", (req, res) => {
   const user = userDatabase[req.cookies["user_id"]];
   if (!user) {
-    res.status(401).send("Status Code: 401 Unauthorized Request. Request has not been applied due to lack of authentication credentails.");
+    return res.status(401).send("Status Code: 401 Unauthorized Request. Request has not been applied due to lack of authentication credentails.");
   }
   const shortenedURL = generateRandomString();
   urlDatabase[shortenedURL] = { longURL: req.body.longURL, userID: user.id };
@@ -50,6 +55,15 @@ app.get("/urls/new", (req, res) => {
 
 app.post("/urls/:shortURL/delete", (req, res) => {
   const { shortURL } = req.params;
+  const user = userDatabase[req.cookies["user_id"]];
+
+  if (!urlDatabase[shortURL]) {
+    return res.status(404).send("Status Code: 404 Resource Not Found.");
+  }
+  if (!user || urlDatabase[shortURL].userID !== user.id) {
+    return res.status(403).send("Status Code: 403 Forbidden Access.");
+  }
+
   delete urlDatabase[shortURL];
   res.redirect("/urls");
 });
@@ -57,12 +71,37 @@ app.post("/urls/:shortURL/delete", (req, res) => {
 app.get("/urls/:shortURL", (req, res) => {
   const { shortURL } = req.params;
   const user = userDatabase[req.cookies["user_id"]];
+
+  if (!urlDatabase[shortURL]) {
+    return res.status(404).send("Status Code: 404 Resource Not Found.");
+  }
+  if (!user) {
+    return res.render("unauthenticated", { username: null, error: "Status Code: 403 Forbidden Access. You must Log in." });
+  }
+  if (urlDatabase[shortURL].userID !== user.id) {
+    res.status(403);
+    return res.render("unauthenticated", { username: user, error: "Status Code: 403 Forbidden Access" });
+  }
+
   const templateVars = { shortURL, longURL: urlDatabase[shortURL].longURL, username: user };
   res.render("urls_show", templateVars);
 });
 
 app.post("/urls/:shortURL", (req, res) => {
   const { shortURL } = req.params;
+  const user = userDatabase[req.cookies["user_id"]];
+
+  if (!urlDatabase[shortURL]) {
+    return res.status(404).send("Status Code: 404 Resource Not Found.");
+  }
+  if (!user) {
+    return res.render("unauthenticated", { username: null, error: "Status Code: 403 Forbidden Access. You must Log in." });
+  }
+  if (urlDatabase[shortURL].userID !== user.id) {
+    res.status(403);
+    return res.render("unauthenticated", { username: user, error: "Status Code: 403 Forbidden Access" });
+  }
+
   const { newURL } = req.body;
   urlDatabase[shortURL].longURL = newURL;
   res.redirect("/urls");
