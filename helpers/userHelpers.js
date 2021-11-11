@@ -1,4 +1,5 @@
 const generateRandomString = require('./generateRandomString');
+const bcrypt = require('bcryptjs');
 const userHelperGenerator = (userDB, urlDB) => {
 
   const errorHandler = (user, shortURL = null) => {
@@ -33,7 +34,6 @@ const userHelperGenerator = (userDB, urlDB) => {
         data: null,
       };
     }
-
     const id = generateRandomString();
     const newUser = {
       id,
@@ -64,14 +64,7 @@ const userHelperGenerator = (userDB, urlDB) => {
         data: null,
       };
     }
-    if (user.password !== password) {
-      return {
-        error: "Error: 403 Status Code<br/>Password incorrect.",
-        statusCode: 403,
-        data: null,
-      };
-    }
-
+    console.log("called");
     return {
       error: null,
       statusCode: null,

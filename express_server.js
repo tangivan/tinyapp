@@ -3,6 +3,7 @@ const morgan = require("morgan");
 const cookieParser = require("cookie-parser");
 const generateRandomString = require("./helpers/generateRandomString");
 const userHelperGenerator = require("./helpers/userHelpers");
+const bcrypt = require("bcryptjs");
 
 const userDatabase = require("./data/userData");
 const urlDatabase = require("./data/urlData");
@@ -135,9 +136,14 @@ app.post("/login", (req, res) => {
   if (error) {
     return res.status(statusCode).send(error);
   }
-
-  res.cookie("user_id", data.id);
-  res.redirect('/urls');
+  console.log(data.password);
+  bcrypt.compare(password, data.password, (err, success) => {
+    if (!success) {
+      return res.status(400).send("Bad Request. Passwords do not match.");
+    }
+    res.cookie("user_id", data.id);
+    res.redirect('/urls');
+  });
 });
 
 app.post("/logout", (req, res) => {
@@ -161,9 +167,15 @@ app.post("/register", (req, res) => {
   if (error) {
     return res.status(statusCode).send(error);
   }
-  userDatabase[data.id] = data;
-  res.cookie("user_id", data.id);
-  res.redirect('/urls');
+
+  bcrypt.genSalt(10, (err, salt) => {
+    bcrypt.hash(data.password, salt, (err, hash) => {
+      data.password = hash;
+      userDatabase[data.id] = data;
+      res.cookie("user_id", data.id);
+      res.redirect('/urls');
+    });
+  });
 });
 
 app.get("*", (req, res) => {
