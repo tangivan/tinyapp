@@ -11,26 +11,26 @@
   <title>TinyApp</title>
 </head>
 
-<body>
+<body class="bg-light">
   <%- include('partials/_header') %>
     <main style="margin: 1em;">
       <div class="container">
-        <h1 class="text-center">Log In</h1>
+        <h1 class="text-center" style="color: #777777">Log In</h1>
         <form method="POST" action="/login">
           <div class="form-row justify-content-center mt-3">
             <div class="form-group col-4">
-              <label for="email">Email Address</label>
+              <label for="email" style="color: #777777">Email Address</label>
               <input class="form-control" type="email" placeholder="Enter email" name="email" />
             </div>
           </div>
           <div class="form-row justify-content-center">
             <div class="form-group col-4">
-              <label for="password">Password</label>
+              <label for="password" style="color: #777777">Password</label>
               <input class="form-control" type="password" placeholder="Password" name="password" />
             </div>
           </div>
           <div class="row justify-content-center">
-            <button type="submit" class="col-2 btn btn-primary">Log In</button>
+            <button type="submit" class="col-2 btn btn-dark">Log In</button>
           </div>
         </form>
       </div>

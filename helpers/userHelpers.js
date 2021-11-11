@@ -1,6 +1,10 @@
 const generateRandomString = require('./generateRandomString');
 const userHelperGenerator = (userDB, urlDB) => {
 
+  const errorHandler = (user, shortURL = null) => {
+
+  };
+
   const getUser = (email) => {
     let user;
     for (const key in userDB) {
