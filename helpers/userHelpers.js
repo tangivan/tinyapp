@@ -1,5 +1,5 @@
 const generateRandomString = require('./generateRandomString');
-const userHelperGenerator = (userDB) => {
+const userHelperGenerator = (userDB, urlDB) => {
 
   const getUser = (email) => {
     let user;
@@ -75,10 +75,21 @@ const userHelperGenerator = (userDB) => {
     };
   };
 
+  const urlsForUser = id => {
+    const userUrls = {};
+    for (const url in urlDB) {
+      if (urlDB[url].userID === id) {
+        userUrls[url] = urlDB[url];
+      }
+    }
+    return userUrls;
+  };
+
   return {
     getUser,
     authUser,
     createUser,
+    urlsForUser,
   };
 };
 
