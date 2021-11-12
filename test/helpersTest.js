@@ -2,7 +2,7 @@ const { assert } = require('chai');
 const testUsers = require("../data/userData");
 const urlDatabase = require("../data/urlData");
 const userHelperGenerator = require("../helpers/helpers");
-const { getUserByEmail, authUser, createUser, urlsForUser } = userHelperGenerator(testUsers, urlDatabase);
+const { getUserByEmail, authErrorHandler, createUser, urlsForUser } = userHelperGenerator(testUsers, urlDatabase);
 const generateRandomString = require('../helpers/generateRandomString');
 
 describe('getUserByEmail', function() {
@@ -23,47 +23,47 @@ describe('getUserByEmail', function() {
 
 describe('authUser', function() {
   it('Should return error when email is empty', function() {
-    const { data, error, statusCode } = authUser("", "abc");
+    const { user, error, statusCode } = authErrorHandler("", "abc");
     const expectedData = null;
     const expectedError = "Error: 400 Status Code<br/>Email or Password is empty.";
     const expectedStatusCode = 400;
-    assert.equal(data, expectedData);
+    assert.equal(user, expectedData);
     assert.equal(error, expectedError);
     assert.equal(statusCode, expectedStatusCode);
   });
 
   it('Should return error when password is empty', function() {
-    const { data, error, statusCode } = authUser("ivan@ivan.com", "");
+    const { user, error, statusCode } = authErrorHandler("ivan@ivan.com", "");
     const expectedData = null;
     const expectedError = "Error: 400 Status Code<br/>Email or Password is empty.";
     const expectedStatusCode = 400;
-    assert.equal(data, expectedData);
+    assert.equal(user, expectedData);
     assert.equal(error, expectedError);
     assert.equal(statusCode, expectedStatusCode);
   });
 
   it('Should return error when both email and password are empty', function() {
-    const { data, error, statusCode } = authUser("", "");
+    const { user, error, statusCode } = authErrorHandler("", "");
     const expectedData = null;
     const expectedError = "Error: 400 Status Code<br/>Email or Password is empty.";
     const expectedStatusCode = 400;
-    assert.equal(data, expectedData);
+    assert.equal(user, expectedData);
     assert.equal(error, expectedError);
     assert.equal(statusCode, expectedStatusCode);
   });
 
   it('Should return error email is non-existant', function() {
-    const { data, error, statusCode } = authUser("asdfsd@sldflds.com", "asdkflsd");
+    const { user, error, statusCode } = authErrorHandler("asdfsd@sldflds.com", "asdkflsd");
     const expectedData = null;
     const expectedError = "Error: 403 Status Code<br/>Email cannot be found.";
     const expectedStatusCode = 403;
-    assert.equal(data, expectedData);
+    assert.equal(user, expectedData);
     assert.equal(error, expectedError);
     assert.equal(statusCode, expectedStatusCode);
   });
 
   it('Should return user if email exists', function() {
-    const { data, error, statusCode } = authUser("ivan@ivan.com", "abc");
+    const { user, error, statusCode } = authErrorHandler("ivan@ivan.com", "abc");
     const expectedData = {
       id: "2jv0ee",
       email: "ivan@ivan.com",
@@ -71,7 +71,7 @@ describe('authUser', function() {
     };
     const expectedError = null;
     const expectedStatusCode = null;
-    assert.deepEqual(data, expectedData);
+    assert.deepEqual(user, expectedData);
     assert.equal(error, expectedError);
     assert.equal(statusCode, expectedStatusCode);
   });
@@ -79,51 +79,51 @@ describe('authUser', function() {
 
 describe('createUser', function() {
   it('Should return error when email is empty', function() {
-    const { data, error, statusCode } = createUser("", "abc");
+    const { user, error, statusCode } = createUser("", "abc");
     const expectedData = null;
     const expectedError = "Error: 400 Status Code<br/>Email or Password is empty.";
     const expectedStatusCode = 400;
-    assert.equal(data, expectedData);
+    assert.equal(user, expectedData);
     assert.equal(error, expectedError);
     assert.equal(statusCode, expectedStatusCode);
   });
 
   it('Should return error when password is empty', function() {
-    const { data, error, statusCode } = createUser("ivan@ivan.com", "");
+    const { user, error, statusCode } = createUser("ivan@ivan.com", "");
     const expectedData = null;
     const expectedError = "Error: 400 Status Code<br/>Email or Password is empty.";
     const expectedStatusCode = 400;
-    assert.equal(data, expectedData);
+    assert.equal(user, expectedData);
     assert.equal(error, expectedError);
     assert.equal(statusCode, expectedStatusCode);
   });
 
   it('Should return error when both email and password are empty', function() {
-    const { data, error, statusCode } = createUser("", "");
+    const { user, error, statusCode } = createUser("", "");
     const expectedData = null;
     const expectedError = "Error: 400 Status Code<br/>Email or Password is empty.";
     const expectedStatusCode = 400;
-    assert.equal(data, expectedData);
+    assert.equal(user, expectedData);
     assert.equal(error, expectedError);
     assert.equal(statusCode, expectedStatusCode);
   });
 
   it('Should return new user if email is non-existant', function() {
-    const { data, error, statusCode } = createUser("abc@def.com", "abc");
+    const { user, error, statusCode } = createUser("abc@def.com", "abc");
     const expectedData = "abc@def.com";
     const expectedError = null;
     const expectedStatusCode = null;
-    assert.equal(data.email, expectedData);
+    assert.equal(user.email, expectedData);
     assert.equal(error, expectedError);
     assert.equal(statusCode, expectedStatusCode);
   });
 
   it('Should return error if email exists', function() {
-    const { data, error, statusCode } = createUser("ivan@ivan.com", "abc");
+    const { user, error, statusCode } = createUser("ivan@ivan.com", "abc");
     const expectedData = null;
     const expectedError = "Error: 400 Status Code<br/>User already exists";
     const expectedStatusCode = 400;
-    assert.deepEqual(data, expectedData);
+    assert.deepEqual(user, expectedData);
     assert.equal(error, expectedError);
     assert.equal(statusCode, expectedStatusCode);
   });

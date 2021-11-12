@@ -1,5 +1,4 @@
 const generateRandomString = require('./generateRandomString');
-const bcrypt = require('bcryptjs');
 
 const userHelperGenerator = (userDB, urlDB) => {
 
@@ -15,20 +14,22 @@ const userHelperGenerator = (userDB, urlDB) => {
     return user;
   };
 
+  /*Takes in an email and password and performs checks for input errors
+    returns a new user object ready to have it's password hashed */
   const createUser = (email, password) => {
     const user = getUserByEmail(email);
-    if (email === '' || password === '') {
+    if (!email || !password) {
       return {
         error: "Error: 400 Status Code<br/>Email or Password is empty.",
         statusCode: 400,
-        data: null,
+        user: null,
       };
     }
     if (user) {
       return {
         error: "Error: 400 Status Code<br/>User already exists",
         statusCode: 400,
-        data: null,
+        user: null,
       };
     }
     const id = generateRandomString();
@@ -37,39 +38,40 @@ const userHelperGenerator = (userDB, urlDB) => {
       email,
       password
     };
-
     return {
       error: null,
       statusCode: null,
-      data: newUser,
+      user: newUser,
     };
   };
 
-  /* authUser takes in an email and password and returns a error message, status code, and user if it exists */
-  const authUser = (email, password) => {
+  /*This function originally handled password matching as well.
+    But due to using async bcrypt and needing to redirect, I moved
+    it back to express_server.js */
+  const authErrorHandler = (email, password) => {
     const user = getUserByEmail(email);
-    if (email === '' || password === '') { //gary said change to !email || !password
+    if (!email || !password) {
       return {
         error: "Error: 400 Status Code<br/>Email or Password is empty.",
         statusCode: 400,
-        data: null,
+        user: null,
       };
     }
     if (!user) {
       return {
         error: "Error: 403 Status Code<br/>Email cannot be found.",
         statusCode: 403,
-        data: null,
+        user: null,
       };
     }
-
     return {
       error: null,
       statusCode: null,
-      data: user,
+      user: user,
     };
   };
 
+  //Takes in an id and returns all urls belonging to the id
   const urlsForUser = id => {
     const userUrls = {};
     for (const url in urlDB) {
@@ -82,7 +84,7 @@ const userHelperGenerator = (userDB, urlDB) => {
 
   return {
     getUserByEmail,
-    authUser,
+    authErrorHandler,
     createUser,
     urlsForUser,
   };

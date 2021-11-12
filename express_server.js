@@ -8,7 +8,7 @@ const bcrypt = require("bcryptjs");
 //Setup database with userHelperGenerator
 const userDatabase = require("./data/userData");
 const urlDatabase = require("./data/urlData");
-const { authUser, createUser, urlsForUser } = userHelperGenerator(userDatabase, urlDatabase);
+const { authErrorHandler, createUser, urlsForUser } = userHelperGenerator(userDatabase, urlDatabase);
 
 const app = express();
 const PORT = 8080; // default port 8080
@@ -25,7 +25,7 @@ app.use(cookieSession({
 
 // GET methods
 app.get("/", (req, res) => {
-  const id = req.session.userId;
+  const id = req.session.userId; //user's id from cookie
   const user = userDatabase[id];
   if (user) {
     return res.redirect('/urls');
@@ -79,7 +79,7 @@ app.get("/u/:shortURL", (req, res) => {
   if (!urlDatabase[shortURL]) {
     return res.status(404).send("Status Code: 404 Resource Not Found.");
   }
-  const longURL = urlDatabase[shortURL].longURL;
+  const longURL = urlDatabase[shortURL].longURL; //grab longURL from database
   res.redirect(longURL);
 });
 
@@ -103,17 +103,19 @@ app.get("/register", (req, res) => {
 });
 
 //POST Methods
+
 app.post("/urls", (req, res) => {
   const id = req.session.userId;
   const user = userDatabase[id];
+  const { longURL } = req.body;
   if (!user) {
     return res.status(401).send("Status Code: 401 Unauthorized Request. Request has not been applied due to lack of authentication credentails.");
   }
-  if (req.body.longURL === '') {
+  if (longURL === '') {
     return res.status(400).send("Status Code: 400 Bad Request. Cannot shorten empty link.");
   }
   const shortenedURL = generateRandomString();
-  urlDatabase[shortenedURL] = { longURL: req.body.longURL, userID: user.id };
+  urlDatabase[shortenedURL] = { longURL, userID: user.id };
   res.redirect(`/urls/${shortenedURL}`);
 });
 
@@ -121,11 +123,12 @@ app.post("/urls/:shortURL/delete", (req, res) => {
   const { shortURL } = req.params;
   const id = req.session.userId;
   const user = userDatabase[id];
+  const urlUserId = urlDatabase[shortURL].userID;
 
   if (!urlDatabase[shortURL]) {
     return res.status(404).send("Status Code: 404 Resource Not Found.");
   }
-  if (!user || urlDatabase[shortURL].userID !== user.id) {
+  if (!user || urlUserId !== user.id) {
     return res.status(403).send("Status Code: 403 Forbidden Access. Request denied due to lacking credentials");
   }
 
@@ -137,13 +140,15 @@ app.post("/urls/:shortURL", (req, res) => {
   const { shortURL } = req.params;
   const id = req.session.userId;
   const user = userDatabase[id];
+  const urlUserId = urlDatabase[shortURL].userID;
+
   if (!urlDatabase[shortURL]) {
     return res.status(404).send("Status Code: 404 Resource Not Found.");
   }
   if (!user) {
     return res.status(403).send(`Status Code: 403 Forbidden Access. You must <a href="login">log in</a> to edit shortened links.`);
   }
-  if (urlDatabase[shortURL].userID !== user.id) {
+  if (urlUserId !== user.id) {
     return res.status(403).send(`Status Code: 403 Forbidden Access. You lack the credentials to access this resource.`);
   }
 
@@ -154,17 +159,18 @@ app.post("/urls/:shortURL", (req, res) => {
 
 app.post("/login", (req, res) => {
   const { email, password } = req.body;
-  const { data, error, statusCode } = authUser(email, password);
-  //rename data to user
+  //authErrorHandler will handle all 4xx errors and return the user object, error, and status code
+  const { user, error, statusCode } = authErrorHandler(email, password);
+
   if (error) {
     return res.status(statusCode).send(error);
   }
-  console.log(data.password);
-  bcrypt.compare(password, data.password, (err, success) => {
+  //Async bcrypt to check if the hashed passwords match
+  bcrypt.compare(password, user.password, (err, success) => {
     if (!success) {
       return res.status(400).send("Bad Request. Passwords do not match.");
     }
-    req.session.userId = data.id;
+    req.session.userId = user.id;
     res.redirect('/urls');
   });
 });
@@ -177,18 +183,19 @@ app.post("/logout", (req, res) => {
 
 app.post("/register", (req, res) => {
   const { email, password } = req.body;
-  const { data, error, statusCode } = createUser(email, password);
+  //createUser handles all input errors and returns a new user object, error, and status code
+  const { user, error, statusCode } = createUser(email, password);
 
   if (error) {
     return res.status(statusCode).send(error);
   }
 
+  //Async bcrypt to hash the password for the created user object.
   bcrypt.genSalt(10, (err, salt) => {
-    bcrypt.hash(data.password, salt, (err, hash) => {
-      data.password = hash;
-      userDatabase[data.id] = data;
-      console.log(data.password);
-      req.session.userId = data.id;
+    bcrypt.hash(user.password, salt, (err, hash) => {
+      user.password = hash;
+      userDatabase[user.id] = user;
+      req.session.userId = user.id;
       res.redirect('/urls');
     });
   });
