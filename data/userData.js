@@ -12,7 +12,7 @@ const userDatabase = {
   "2jv0ee": {
     id: "2jv0ee",
     email: "ivan@ivan.com",
-    password: "abcdefg"
+    password: "$2a$10$k87Q4bOTtgWWUa8AI7ezQOziftp2wvb0yVIlwfsQmPgI60Rq60jFO"
   }
 };
 
