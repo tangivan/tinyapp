@@ -11,8 +11,7 @@
 <body class="bg-light">
   <%- include('partials/_header') %>
     <div class="card text-center" class="bg-light">
-      <div class="card-header"></div>
-      <div class="card-body">
+      <div class="card-body bg-light">
         <h5 class="card-title">TinyURL for: <%= longURL %>
         </h5>
         <p class="card-text">Short URL: <a href="/u/<%= shortURL %>">
@@ -21,13 +20,13 @@
       </div>
     </div>
     <div class="card text-center" class="bg-light">
-      <div class="card-body">
+      <div class="card-body bg-light">
         <h5 class="card-title">Edit</h5>
         <form class="form-row justify-content-center" method="POST" action="/urls/<%= shortURL %>">
           <div class="form-group col-2">
             <label>New URL</label>
             <input class="form-control mb-2" name="newURL" />
-            <button type="submit" class="btn btn-primary">Submit</button>
+            <button type="submit" class="btn text-white" style="background-color: #453F8C;">Submit</button>
           </div>
         </form>
       </div>
