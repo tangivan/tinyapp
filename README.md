@@ -16,31 +16,33 @@
     <li>
       <a href="#about-the-project">About The Project</a>
       <ul>
+        <li><a href="#demo-screenshots">Demo Screenshots</a></li>
+      </ul>
+      <ul>
         <li><a href="#dependencies">Dependencies</a></li>
       </ul>
     </li>
     <li>
-    <a href="#project-details">Features</a>
+    <a href="#features">Features</a>
     </li>
     <li>
     <a href="#getting-started">Getting Started</a>
-      <ul>
-        <li><a href="#how-to-use">How to Use</a></li>
-      </ul>
     </li>
   </ul>
 </details>
 
 # About The Project
-<img alt="log-in page" src="./imgs/tinyapp-1.png" width="400">
-<img alt="register page" src="./imgs/tinyapp-2.png" width="400">
-<img alt="list of urls" src="./imgs/tinyapp-3.png" width="400">
-<img alt="shortened link creation" src="./imgs/tinyapp-4.png" width="400">
-<img alt="edit links" src="./imgs/tinyapp-5.png" width="400">
-<br />
-<br />
-TinyApp is a full stack web application built with Node and Express that allows users to shorten long URLs (à la bit.ly).
-<br />
+TinyApp is a full stack web application built with Node and Express that allows users to shorten long URLs (à la bit.ly). This web application features user account creation, shortening of long links, saving links to your list, updating links, and link deletion. If you want a place to hold all your shortened links, then this app is just an `npm install` away!
+<br/>
+
+## Demo Screenshots
+<p align="center">
+<img alt="log-in page" src="./imgs/tinyapp-1.png" width="100%">
+<img alt="register page" src="./imgs/tinyapp-2.png" width="100%">
+<img alt="list of urls" src="./imgs/tinyapp-3.png" width="100%">
+<img alt="shortened link creation" src="./imgs/tinyapp-4.png" width="100%">
+<img alt="edit links" src="./imgs/tinyapp-5.png" width="100%">
+</p>
 <br />
 
 ### Dependencies
@@ -50,8 +52,6 @@ TinyApp is a full stack web application built with Node and Express that allows 
 * [body-parser](https://www.npmjs.com/package/body-parser)
 * [cookie-session](https://www.npmjs.com/package/cookie-session)
 * [morgan](https://expressjs.com/en/resources/middleware/morgan.html)
-<br />
-<br />
 
 # Features
 * User Authentication
@@ -59,8 +59,6 @@ TinyApp is a full stack web application built with Node and Express that allows 
 * List Of Shortened Links
 * Link Update
 * Link Deletion
-<br />
-<br />
 
 # Getting Started
 - Install all dependencies (using the `npm install` command).
