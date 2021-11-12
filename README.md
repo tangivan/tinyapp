@@ -37,11 +37,10 @@ TinyApp is a full stack web application built with Node and Express that allows 
 
 ## Demo Screenshots
 <p align="center">
-<img alt="log-in page" src="./imgs/tinyapp-1.png" width="100%">
-<img alt="register page" src="./imgs/tinyapp-2.png" width="100%">
-<img alt="list of urls" src="./imgs/tinyapp-3.png" width="100%">
-<img alt="shortened link creation" src="./imgs/tinyapp-4.png" width="100%">
-<img alt="edit links" src="./imgs/tinyapp-5.png" width="100%">
+<img alt="urlspage" src="./docs/urls-page.png" width="100%">
+<img alt="login-page" src="./docs/login-page.png" width="100%">
+<img alt="register-page" src="./docs/register-page.png" width="100%">
+<img alt="create-page" src="./docs/create-page.png" width="100%">
 </p>
 <br />
 
