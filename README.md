@@ -1,6 +1,6 @@
 <p align="center">
   <a href="https://github.com/tangivan/tinyapp">
-    <img src="imgs/logo-ivan.png" alt="Logo" width="130" height="80">
+    <img src="docs/logo-ivan.png" alt="Logo" width="130" height="80">
   </a>
 
   <h3 align="center">TinyApp Project</h3>
