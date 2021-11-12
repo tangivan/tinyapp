@@ -1,6 +1,6 @@
 <p align="center">
   <a href="https://github.com/tangivan/tinyapp">
-    <img src="images/logo-ivan.png" alt="Logo" width="130" height="80">
+    <img src="imgs/logo-ivan.png" alt="Logo" width="130" height="80">
   </a>
 
   <h3 align="center">TinyApp Project</h3>
@@ -31,13 +31,6 @@
   </ul>
 </details>
 
-# Features
-* User Authentication
-* Link Shortener 
-* List Of Shortened Links
-* Link Update
-* Link Deletion
-
 # About The Project
 <img alt="log-in page" src="./imgs/tinyapp-1.png" width="400">
 <img alt="register page" src="./imgs/tinyapp-2.png" width="400">
@@ -50,13 +43,22 @@ TinyApp is a full stack web application built with Node and Express that allows 
 <br />
 <br />
 
-
 ### Dependencies
-* [Node.js](https://developer.mozilla.org/en-US/docs/Web/HTML)
-* [Express](https://developer.mozilla.org/en-US/docs/Web/CSS)
-* [bcrypt](https://developer.mozilla.org/en-US/docs/Web/JavaScript)
-* [body-parser](https://jquery.com/)
-* [cookie-session](https://jquery.com/)
+* [Node.js](https://nodejs.dev/)
+* [Express](https://expressjs.com/)
+* [bcrypt](https://www.npmjs.com/package/bcryptjs)
+* [body-parser](https://www.npmjs.com/package/body-parser)
+* [cookie-session](https://www.npmjs.com/package/cookie-session)
+* [morgan](https://expressjs.com/en/resources/middleware/morgan.html)
+<br />
+<br />
+
+# Features
+* User Authentication
+* Link Shortener 
+* List Of Shortened Links
+* Link Update
+* Link Deletion
 <br />
 <br />
 
