@@ -6,7 +6,7 @@
   <h3 align="center">TinyApp Project</h3>
 
   <p align="center">
-   A web full-stack application for shortening links
+   A full-stack web application for shortening links
   </p>
 </p>
 
