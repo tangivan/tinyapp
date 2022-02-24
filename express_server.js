@@ -8,19 +8,23 @@ const bcrypt = require("bcryptjs");
 //Setup database with userHelperGenerator
 const userDatabase = require("./data/userData");
 const urlDatabase = require("./data/urlData");
-const { authErrorHandler, createUser, urlsForUser } = userHelperGenerator(userDatabase, urlDatabase);
+const {
+  authErrorHandler,
+  createUser,
+  urlsForUser,
+  isPreviousVisitor,
+  sessionCheck,
+} = userHelperGenerator(userDatabase, urlDatabase);
 
 const app = express();
 const PORT = 8080; // default port 8080
 
 app.set("view engine", "ejs");
 
-const bodyParser = require("body-parser");
-app.use(bodyParser.urlencoded({ extended: true }));
 app.use(morgan('dev'));
 app.use(cookieSession({
   name: 'session',
-  keys: ['key1', 'key2']
+  keys: ['key1', 'key2', 'key3', 'key4']
 }));
 
 // GET methods
@@ -70,16 +74,28 @@ app.get("/urls/:shortURL", (req, res) => {
     return res.status(403).send(`Status Code: 403 Forbidden Access<br/> Request denied due to lacking credentials.`);
   }
 
-  const templateVars = { shortURL, longURL: urlDatabase[shortURL].longURL, username: user };
+  const templateVars = { shortURL, longURL: urlDatabase[shortURL].longURL, username: user, url: urlDatabase[shortURL] };
   res.render("urls_show", templateVars);
 });
 
 app.get("/u/:shortURL", (req, res) => {
   const { shortURL } = req.params;
-  if (!urlDatabase[shortURL]) {
+  const url = urlDatabase[shortURL];
+  const urlSession = sessionCheck(req);
+  console.log(urlSession);
+  if (!url) {
     return res.status(404).send("Status Code: 404 Resource Not Found.");
   }
-  const longURL = urlDatabase[shortURL].longURL; //grab longURL from database
+  const longURL = url.longURL; //grab longURL from database
+  //analytics
+  if (!isPreviousVisitor(shortURL, urlSession)) {
+    url.uniqueVisits++;
+  }
+  url.visits++;
+  const visit = {};
+  visit[urlSession] = new Date();
+  url.visitData.push(visit);
+  //analytics
   res.redirect(longURL);
 });
 
@@ -115,7 +131,13 @@ app.post("/urls", (req, res) => {
     return res.status(400).send("Status Code: 400 Bad Request. Cannot shorten empty link.");
   }
   const shortenedURL = generateRandomString();
-  urlDatabase[shortenedURL] = { longURL, userID: user.id };
+  urlDatabase[shortenedURL] = {
+    longURL,
+    userID: user.id,
+    visits: 0,
+    uniqueVisits: 0,
+    visitData: [],
+  };
   res.redirect(`/urls/${shortenedURL}`);
 });
 
