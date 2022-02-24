@@ -2,6 +2,25 @@ const generateRandomString = require('./generateRandomString');
 
 const userHelperGenerator = (userDB, urlDB) => {
 
+  /*Return new cookie if session does not exist. return cookie if it does exist */
+  const sessionCheck = (req) => {
+    if (!req.session.visitor) {
+      req.session.visitor = generateRandomString();
+      return req.session.visitor;
+    } else {
+      return req.session.visitor;
+    }
+  };
+
+  /* Check if visitor is unique or not */
+  const isPreviousVisitor = (url, visitorId) => {
+    const prevVisitor = urlDB[url].visitData.filter(obj => obj[visitorId]);
+    if (prevVisitor.length === 0) {
+      return false;
+    }
+    return true;
+  };
+
   const getUserByEmail = (email) => {
     let user;
     for (const key in userDB) {
@@ -87,6 +106,8 @@ const userHelperGenerator = (userDB, urlDB) => {
     authErrorHandler,
     createUser,
     urlsForUser,
+    isPreviousVisitor,
+    sessionCheck
   };
 };
 
